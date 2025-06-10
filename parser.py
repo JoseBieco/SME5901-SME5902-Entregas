@@ -3,6 +3,34 @@ import numpy as np
 import re
 
 def parse_model_from_txt(filepath):
+    """
+    Analisa um arquivo de texto (.txt) contendo um modelo de Programação Linear (PL)
+    e o converte para um formato matricial adequado para o solver Simplex.
+
+    A função extrai a função objetivo, as restrições e as especificações de
+    domínio das variáveis (padrão >= 0, livre ou negativa). Ela transforma
+    automaticamente o modelo para a forma padrão, onde todas as variáveis de
+    decisão são não-negativas, e prepara um dicionário com todas as informações
+    necessárias para a resolução e posterior interpretação dos resultados.
+
+    Formato do Arquivo de Modelo Esperado:
+    - A primeira linha deve ser a função objetivo (ex: "max 3x1 + 5x2").
+    - A linha "s.t." (subject to) deve separar o objetivo das restrições.
+    - Cada restrição deve estar em uma nova linha (ex: "x1 + 2x2 <= 10").
+    - Sinais aceitos para restrições: '<=', '>=', '='.
+    - Especificações de domínio são opcionais e podem vir antes ou depois das
+      restrições (ex: "x1 free", "x3 negative"). Variáveis não especificadas
+      são consideradas não-negativas (>= 0) por padrão.
+
+    Args:
+        filepath (str): O caminho para o arquivo .txt contendo o modelo de PL.
+
+    Returns:
+        dict: Um dicionário contendo a estrutura do problema de PL processado.
+              Este dicionário está pronto para ser passado como argumento para a
+              classe Simplex. A estrutura detalhada deste dicionário de retorno
+              é explicada na seção "Análise do Dicionário de Retorno".
+    """
     with open(filepath, 'r') as f:
         lines = [line.strip() for line in f.readlines() if line.strip()]
 
